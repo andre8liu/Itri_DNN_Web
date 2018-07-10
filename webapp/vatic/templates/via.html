@@ -537,8 +537,8 @@
           <li class="dropdown"><a title="Annotations" class="drop_menu_item">Annotation &#9662;</a>
             <div class="dropdown-content">
               <a onclick="show_annotation_data()" title="View annotations">View annotations</a>
-              <a onclick="download_all_region_data('csv')" title="Save image region annotations as a CSV(comma separated value) file">Save as CSV</a>
-              <a onclick="download_all_region_data('json')" title="Save image region annotations as a JSON(Javascript Object Notation) file">Save as JSON</a>
+         <!--     <a onclick="download_all_region_data('csv')" title="Save image region annotations as a CSV(comma separated value) file">Save as CSV</a>  -->
+              
               <a onclick="sel_local_data_file('annotations')" title="Import existing region data from CSV or JSON file">Import</a>
             </div>
           </li>
@@ -662,11 +662,16 @@
 
       <!-- Main display area: contains image canvas, ... -->
       <div id="display_area">
+          
         <div id="canvas_panel">
           <canvas id="image_canvas"></canvas>
           <canvas id="region_canvas" tabindex="1">Sorry, your browser does not support HTML5 Canvas functionality which is required for this application.</canvas>
         </div>
-
+        <div id = "saveButton">
+            <div class="dropdown-content">
+              <a onclick="download_all_region_data('json')" title="Save image region annotations as a JSON(Javascript Object Notation) file">Save as JSON</a>
+              </div>
+          </div>
         <div>
           <div class="text_panel" id="via_start_info_panel">Starting VGG Image Annotator ...</div>
 
@@ -763,6 +768,11 @@
          items like Keyboard Shortcut hidden under the attributes panel -->
     <div style="width: 100%;" id="vertical_space"></div>
 
+    <div id = "saveButton">
+      <div class="dropdown-content">
+        <a onclick="download_all_region_data('json')" title="Save image region annotations as a JSON(Javascript Object Notation) file">Save as JSON</a>
+        </div>
+    </div>
     <script type="text/javascript">
       //<!--AUTO_INSERT_VIA_DEMO_JS_HERE-->
     </script>
@@ -1028,13 +1038,14 @@ function sel_local_images() {
     invisible_file_input.click();
   }
 }
+
 function download_all_region_data(type) {
   // Javascript strings (DOMString) is automatically converted to utf-8
   // see: https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob
   var all_region_data = pack_via_metadata(type);
   var blob_attr = {type: 'text/'+type+';charset=utf-8'};
   var all_region_data_blob = new Blob(all_region_data, blob_attr);
-
+ 
   if ( all_region_data_blob.size > (2*1024*1024) &&
        type === 'csv' ) {
     show_message('CSV file size is ' + (all_region_data_blob.size/(1024*1024)) +
@@ -1042,6 +1053,8 @@ function download_all_region_data(type) {
   } else {
     save_data_to_local_file(all_region_data_blob, 'via_region_data.'+type);
   }
+  //create new function to save data to json file and send a post request
+  //to the server with the data. 
 }
 
 function sel_local_data_file(type) {
