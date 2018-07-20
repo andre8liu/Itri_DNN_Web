@@ -673,7 +673,11 @@
       </ul>
     </div>
     <!-- endof #toolbar -->
-    <input type="file" id="invisible_file_input" multiple name="files[]" style="display:none">
+    <form id="upload-file" method="post" enctype="multipart/form-data">
+      <fieldset>
+        <input type="file" id="invisible_file_input" multiple name="files[]" style="display:none">
+      </fieldset>
+    </form>
   </div>
   <!-- endof #top_panel -->
 
@@ -1174,6 +1178,31 @@
         invisible_file_input.accept = '.jpg,.jpeg,.png,.bmp';
         invisible_file_input.onchange = store_local_img_ref;
         invisible_file_input.click();
+        /*
+                var csrftoken = getCookie('csrftoken');
+                $.ajaxSetup({
+                  beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                      xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                  }
+                });
+
+                console.log("heya there from sel_local_images()")
+                var form_data = new FormData($('#upload-file')[0]);
+                console.log($('#upload-file'));
+                $.ajax({
+                  type: 'POST',
+                  url: '',
+                  data: form_data, 
+                  contentType: false,
+                  cache: false,
+                  processData: false,
+                  async: false,
+                  success: function (data) {
+                    console.log('Success!');
+                  },
+                }); */
       }
     }
 
@@ -1228,7 +1257,7 @@
           }
         }
       });
-
+/*
       // posting images
       $('#upload-file-btn').click(function () {
         var form_data = new FormData($('#upload-file')[0]);
@@ -1246,14 +1275,14 @@
           },
         });
       });
+*/
 
 
-
-      /* posting json file
+      // posting json file
       $.post(" ", dataToSend, function (data, status) {
         console.log(data + "joijoijoij");
         console.log(status);
-      }); */
+      }); 
 
 
       //TRIGGERS DOWNLOAD BUT WE DONT NEED THIS
@@ -1386,6 +1415,30 @@
       } else {
         show_message("Please upload some image files!");
       }
+      var csrftoken = getCookie('csrftoken');
+      $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        }
+      });
+
+      //console.log("heya there from sel_local_images()")
+      var form_data = new FormData($('#upload-file')[0]);
+      //console.log($('#upload-file')[0]);
+      $.ajax({
+        type: 'POST',
+        url: '',
+        data: form_data,
+        contentType: false,
+        cache: false,
+        processData: false,
+        async: false,
+        success: function (data) {
+          console.log('Success!');
+        },
+      });
     }
 
     //

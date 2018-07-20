@@ -37,22 +37,27 @@ class viaView(View):
 
     def post(self, request):
 
-        # print(request.FILES)
-
-        # SAVES JSON
-        jsondata = json.loads(request.POST.get("data[]"))
-        print(jsondata)
-        with open('data.json', 'w') as outfile:
-            json.dump(jsondata, outfile)
-
-        convertToYolo()
-
-        # SAVES IMAGES!!!!!!
-        # do we need to preserve the name of the image file?
-        # data = request.FILES['file']
-        # imagePathName = 'images/' + str(data)
-        # path = default_storage.save(imagePathName, ContentFile(data.read()))
-       # tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+        print("POST RUNNING")
+        
+        print(request.FILES.getlist('files[]'))
+        
+        if(request.FILES.getlist('files[]')) != []:
+            print("Saving images")
+            #print(len(data))
+            data = request.FILES.getlist('files[]')
+            numFiles = len(data)
+            for x in range(numFiles):
+                imagePathName = 'images/' + str(data[x])
+                path = default_storage.save(imagePathName, ContentFile(data[x].read()))
+                tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+        else:
+            print("Saving JSON and converting to YOLO")
+            jsondata = json.loads(request.POST.get("data[]"))
+            print(jsondata)
+            with open('data.json', 'w') as outfile:
+                json.dump(jsondata, outfile)
+            convertToYolo()
+       
 
         # print(str(data))
 
