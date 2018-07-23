@@ -6,6 +6,7 @@ from PIL import Image
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
 
 # coding=utf-8
@@ -35,6 +36,9 @@ class viaView(View):
         # return HttpResponse("<h1>Hello from python</h1>")
         return render(request, 'via.html', {'testView': testView})
 
+    
+    #@api_view(['POST'])
+    @csrf_exempt
     def post(self, request):
 
         print("POST RUNNING")

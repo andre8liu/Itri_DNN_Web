@@ -1415,6 +1415,9 @@
       } else {
         show_message("Please upload some image files!");
       }
+      
+
+      //console.log("heya there from sel_local_images()")
       var csrftoken = getCookie('csrftoken');
       $.ajaxSetup({
         beforeSend: function (xhr, settings) {
@@ -1423,8 +1426,7 @@
           }
         }
       });
-
-      //console.log("heya there from sel_local_images()")
+      console.log("POSTING");
       var form_data = new FormData($('#upload-file')[0]);
       //console.log($('#upload-file')[0]);
       $.ajax({
