@@ -56,16 +56,18 @@ subprocess.call(['mv','media/images','trainData/images'])
 
 settings = 'cfg/yolov2.cfg'
 paths = 'cfg/coco.data'
-p = subprocess.Popen(['wc','-l','<','labels.names'], stderr = PIPE)
-numClasses = p.stderr.read()
-print(numClasses)
-classes = str(numClasses)
+p = subprocess.Popen(['wc','-l','labels.names'], stdout = PIPE)
+numClasses = p.stdout.read()
+#print(type(numClasses))
+#classes = numClasses.rstrip('labels.names')
+classes = numClasses[0]
 print(classes)
+
 
 #for yolov2.cfg
 replace_(settings,'batch=1','#batch=1')
 replace_(settings,'subdivisions=1','#subdivisions=1')
-replace_(settings,'# batch=64','batch=8')
+replace_(settings,'# batch=64','batch= 5')
 replace_(settings,'# subdivisions=8','subdivisions=1')
 replace_(settings,'max_batches = 500200','max_batches = 10000')
 replace_(settings,'steps=400000,450000','steps=3000,6000')
@@ -122,3 +124,13 @@ def start_docker():
     # transfering image paths
     subprocess.call(['docker', 'cp', 'imagePaths','darknet:usr/local/src/darknet'])
     # transfer script to docker
+
+
+#moving save json/converingyolo/transfering data to server/ and runnning docker scripts 
+#another page
+
+#via views.py post request should handle saving data from forms (using replace to change file scripts)
+#and saving images
+
+#finish fixing post function to change files on save click
+#fix image pathing

@@ -6,7 +6,9 @@ from PIL import Image
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
-
+from tempfile import mkstemp
+from shutil import move
+from os import fdopen, remove
 
 
 # coding=utf-8
@@ -18,12 +20,13 @@ import sys
 reload(sys)
 # Create your views here.
 
-# DONE need to find blob and send that in the post request under data and
-# DONEimages under images
-# save POST.get("data") into a file called beforeYoloData.json in a scripto
-# save POST.get("images") into folder named images
-# call convertToYolo to change beforeYoloData.json to yolo data
-# install and configure darknet for server
+batches = 64
+subdiv = 8
+height = 416
+width = 416
+rate = .001
+max_batches = 500200
+steps = '400000,450000'
 
 
 class viaView(View):
@@ -37,7 +40,20 @@ class viaView(View):
         return render(request, 'via.html', {'testView': testView})
 
     def post(self, request):
+        global subdiv, batches
+        print(request.POST)
+        print(subdiv, batches)
+        batches = request.POST.get('batches')
+        
+        subdiv = request.POST.get('subdiv')
+        print(subdiv, batches)
+        # replace_('testScript.py', "replace_(settings,'# batch=64','batch=8')",
+        #        "replace_(settings,'# batch=64','batch= " + batches + "')")
 
+        return HttpResponse("hey from post return")
+
+
+"""
         print("POST RUNNING")
         
         print(request.FILES.getlist('files[]'))
@@ -61,11 +77,24 @@ class viaView(View):
        
 
         # print(str(data))
+"""
 
-        return HttpResponse("hey from post return")
-        # need
-        # so html file is going to have many post requests,
-        # starts with for loop in html file to post every picture in the array so that
+# need
+# so html file is going to have many post requests,
+# starts with for loop in html file to post every picture in the array so that
+
+
+def replace_(file_path, pattern, subst):
+    # Create temp file
+    fh, abs_path = mkstemp()
+    with fdopen(fh, 'w') as new_file:
+        with open(file_path) as old_file:
+            for line in old_file:
+                new_file.write(line.replace(pattern, subst))
+    # Remove original file
+    remove(file_path)
+    # Move new file
+    move(abs_path, file_path)
 
 
 def test():
@@ -73,7 +102,7 @@ def test():
 
 
 def check_contain_chinese(check_str):
-    #for ch in check_str.decode('utf-8'):
+    # for ch in check_str.decode('utf-8'):
      #   if u'\u4e00' <= ch <= u'\u9fff':
      #       return True
     return False
@@ -96,7 +125,7 @@ def convertToYolo():
     objDict = {}
     objcount = 0
     count = 0
-    
+
     with open(jsonname, 'r') as f:
         data = json.loads(f.readline())
         # print data

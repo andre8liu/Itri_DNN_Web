@@ -9,7 +9,8 @@
 <body>
 
   <!-- <button id="testButton"> Go to Image Annotator </button> -->
-  <h1 id="demo">hey!</h1>
+  <h1> hey! </h1>
+  <!---
   <form id="upload-file" method="post" enctype="multipart/form-data">
     <fieldset>
       <label for="file">Select a file</label>
@@ -19,6 +20,26 @@
       <button id="upload-file-btn" type="button">Upload</button>
     </fieldset>
   </form>
+-->
+
+<form id = "yolo-settings" method = 'post'>
+  <h3>File Configerations:</h1>
+  Batches: <br>
+  <input type="number" name="batches" value = 64><br>
+  Subdivisions:<br>
+  <input type="number" name="subdiv" value = 8><br>
+  Image Height: <br>
+  <input type="number" name="height" value = 416><br>
+  Image Width: <br>
+  <input type="number" name="width" value = 416><br>
+  Learning Rate: <br>
+  <input type="number" name="rate" value = .001><br>
+  Max Batches: <br>
+  <input type="number" name="max_batches" value = 500200><br>
+  Steps: <br>
+  <input type="text" name="steps" value = 400000,450000><br>
+  <button id="save-settings" type = "button">Save!</button>
+</form>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <script>
@@ -50,6 +71,32 @@
         }
       }
     });
+
+    //posting configuration data
+    $('#save-settings').click(function() {
+      //var formData = new FormData($('#yolo-settings')[0])
+      formData = {
+        'batches':  $('input[name=batches]').val(),
+        'subdiv':   $('input[name=subdiv]').val(),
+        'height':   $('input[name=height]').val(),
+        'width':    $('input[name=width]').val(),
+        'rate':     $('input[name=rate]').val(),
+        'max_batches':  $('input[name=max_batches]').val(),
+        'steps':    $('input[name=steps]').val()
+      }
+
+      $.ajax({
+        type: 'POST',
+        url: 'vatic/',
+        data: formData,
+        
+        success: function (data) {
+          console.log('Success!');
+        },
+      });
+
+    });
+
 /* posting images
     $('#upload-file-btn').click(function () {
       var form_data = new FormData($('#upload-file')[0]);
@@ -69,6 +116,7 @@
     }); */
 
     //testing posting json file
+    /*
     var x = {
       data: "data from js"
     };
@@ -82,11 +130,10 @@
         //alert("sucess");
       });
     });
+    */
     
   </script>
 
-
-  <h2> {{text}}</h2>
 </body>
 
 </html>
