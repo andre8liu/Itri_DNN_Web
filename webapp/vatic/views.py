@@ -40,20 +40,18 @@ class viaView(View):
         return render(request, 'via.html', {'testView': testView})
 
     def post(self, request):
-        global subdiv, batches
-        print(request.POST)
-        print(subdiv, batches)
-        batches = request.POST.get('batches')
+        #global subdiv, batches
+        #print(request.POST)
+        #print(subdiv, batches)
+        #batches = request.POST.get('batches')
         
-        subdiv = request.POST.get('subdiv')
-        print(subdiv, batches)
+        #subdiv = request.POST.get('subdiv')
+        #print(subdiv, batches)
         # replace_('testScript.py', "replace_(settings,'# batch=64','batch=8')",
         #        "replace_(settings,'# batch=64','batch= " + batches + "')")
 
-        return HttpResponse("hey from post return")
+        
 
-
-"""
         print("POST RUNNING")
         
         print(request.FILES.getlist('files[]'))
@@ -68,16 +66,39 @@ class viaView(View):
                 path = default_storage.save(imagePathName, ContentFile(data[x].read()))
                 tmp_file = os.path.join(settings.MEDIA_ROOT, path)
         else:
-            print("Saving JSON and converting to YOLO")
-            jsondata = json.loads(request.POST.get("data[]"))
-            print(jsondata)
-            with open('data.json', 'w') as outfile:
-                json.dump(jsondata, outfile)
-            convertToYolo()
+            global subdiv, batches
+            print(request.POST)
+            print(subdiv, batches)
+            batches = request.POST.get('batches')
+            subdiv = request.POST.get('subdiv')
+            height = request.POST.get('height')
+            width = request.POST.get('width')
+            rate = request.POST.get('rate')
+            max_batches = request.POST.get('max_batches')
+            steps = request.POST.get('steps')
+
+            print(subdiv, batches)
+            replace_('testScript.py', "replace_(settings,'# batch=64','batch=8')",
+                "replace_(settings,'# batch=64','batch= " + batches + "')")
+            replace_('testScript.py',"replace_(settings,'# subdivisions=8','subdivisions=1')",
+                "replace_(settings,'# subdivisions=8','subdivisions=" + subdiv + "')")
+            replace_('testScript.py', "replace_(settings,'max_batches = 500200','max_batches = 10000')",
+                    "replace_(settings,'max_batches = 500200','max_batches = " + max_batches + "')")    
+
+            #make values in testScript to normal numbers
+
+
+            #print("Saving JSON and converting to YOLO")
+            #jsondata = json.loads(request.POST.get("data[]"))
+            #print(jsondata)
+            #with open('data.json', 'w') as outfile:
+            #    json.dump(jsondata, outfile)
+            #convertToYolo()
        
 
         # print(str(data))
-"""
+        return HttpResponse("hey from post return")
+
 
 # need
 # so html file is going to have many post requests,
@@ -101,83 +122,7 @@ def test():
     print("testing outside class function")
 
 
-def check_contain_chinese(check_str):
-    # for ch in check_str.decode('utf-8'):
-     #   if u'\u4e00' <= ch <= u'\u9fff':
-     #       return True
-    return False
 
-
-def convertToYolo():
-    imgdirname = './media/images/'
-    jsonname = 'data.json'
-    namefile = 'labels.names'
-
-    # creating files and getting filenames
-    lbldirname = imgdirname.rstrip('images/')+'/labels/'
-    os.system('mkdir -p '+lbldirname)
-    # listname = jsonname.strip('.json')
-    listname = 'imagePaths'
-    listdata = open(listname, 'wb')
-    labelNames = open(namefile, 'w+')  # creates names file
-
-    # for names file
-    objDict = {}
-    objcount = 0
-    count = 0
-
-    with open(jsonname, 'r') as f:
-        data = json.loads(f.readline())
-        # print data
-        print(len(data))
-        for key1 in data.keys():  # goes through each file
-
-            filename = imgdirname+data[key1]['filename']  # gets file name
-            print(filename, count, type(filename))
-            listdata.write(filename.encode('gbk'))
-            listdata.write('\n'.encode('gbk'))
-
-            if os.path.isfile(filename):
-                print("FOUNDIT")
-                if check_contain_chinese(filename):
-                    print(filename + ' is chinese')
-                else:
-                    # reading in picture
-                    image = cv2.imread(
-                        filename, cv2.IMREAD_IGNORE_ORIENTATION | cv2.IMREAD_COLOR)
-                    # getting second set of keys
-                    rectangles = data[key1]['regions']
-                    # returns number of rows columns and channels
-                    height_image, width_image, _ = image.shape
-                    print(len(rectangles.keys()), image.shape,
-                          height_image, width_image)
-                    with open(lbldirname+'/'+os.path.splitext(os.path.basename(filename))[0]+'.txt', 'w') as ff:
-                        for key2 in rectangles.keys():
-                            objType = rectangles[key2]["region_attributes"]
-                            obj = str(objType["Animal"])
-                            if not obj in objDict:
-                                objDict[obj] = objcount
-                                labelNames.write(obj)
-                                labelNames.write(' \n')
-                                objcount += 1
-                            xywh = rectangles[key2]["shape_attributes"]
-                            x = int(xywh["x"])
-                            y = int(xywh["y"])
-                            w = int(xywh["width"])
-                            h = int(xywh["height"])
-                            xn = float(xywh["x"])/width_image
-                            yn = float(xywh["y"])/height_image
-                            wn = float(xywh["width"])/width_image
-                            hn = float(xywh["height"])/height_image
-                            ff.write('%d %1.5f %1.5f %1.5f %1.5f\n' %
-                                     (objDict[obj], xn+wn/2, yn+hn/2, wn, hn))
-                            print('%d %1.5f %1.5f %1.5f %1.5f' %
-                                  (objDict[obj], xn+wn/2, yn+hn/2, wn, hn))
-                            image = cv2.rectangle(
-                                image, (x, y), (x+w, y+h), (255, 0, 0), 1)
-                    # cv2.imshow('test', image) DONT NEED TO SHOW IMAGE
-                    # cv2.waitKey(0)
-                    count += 1
 
 
 """

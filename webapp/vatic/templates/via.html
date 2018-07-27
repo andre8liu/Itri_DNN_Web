@@ -565,6 +565,8 @@
         transform: rotate(360deg);
       }
     }
+
+    #upload-file { display: none;}
   </style>
 </head>
 
@@ -1247,8 +1249,7 @@
       };
       var all_region_data_blob = new Blob(all_region_data, blob_attr);
       var dataToSend = {
-        data: all_region_data,
-        test: "test string"
+        data: all_region_data
       };
 
       var csrftoken = getCookie('csrftoken');
@@ -1259,29 +1260,9 @@
           }
         }
       });
-/*
-      // posting images
-      $('#upload-file-btn').click(function () {
-        var form_data = new FormData($('#upload-file')[0]);
-        //console.log($('#upload-file')[1]);
-        $.ajax({
-          type: 'POST',
-          url: 'vatic/',
-          data: form_data,
-          contentType: false,
-          cache: false,
-          processData: false,
-          async: false,
-          success: function (data) {
-            console.log('Success!');
-          },
-        });
-      });
-*/
-
 
       // posting json file
-      $.post(" ", dataToSend, function (data, status) {
+      $.post("../jsontoyolo/", dataToSend, function (data, status) {
         console.log(data + "joijoijoij");
         console.log(status);
       }); 

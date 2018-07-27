@@ -20,5 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('vatic/', include('vatic.urls')),
     path('main/', include('mainp.urls') ),
-    path('', include('mainp.urls'))
+    path('', include('mainp.urls')),
+    path('jsontoyolo/',include('jsonToYolo.urls'))
 ]
