@@ -9,7 +9,7 @@ from django.conf import settings
 from tempfile import mkstemp
 from shutil import move
 from os import fdopen, remove
-
+import subprocess
 
 # coding=utf-8
 import json
@@ -19,14 +19,6 @@ from importlib import reload
 import sys
 reload(sys)
 # Create your views here.
-
-batches = 64
-subdiv = 8
-height = 416
-width = 416
-rate = .001
-max_batches = 500200
-steps = '400000,450000'
 
 
 class viaView(View):
@@ -47,7 +39,7 @@ class viaView(View):
         
         #subdiv = request.POST.get('subdiv')
         #print(subdiv, batches)
-        # replace_('testScript.py', "replace_(settings,'# batch=64','batch=8')",
+        # replace_(docker_script, "replace_(settings,'# batch=64','batch=8')",
         #        "replace_(settings,'# batch=64','batch= " + batches + "')")
 
         
@@ -59,6 +51,9 @@ class viaView(View):
         if(request.FILES.getlist('files[]')) != []:
             print("Saving images")
             #print(len(data))
+            imgdirname = './media/images/'
+            subprocess.call(['rm','-rf',imgdirname])
+            subprocess.call(['mkdir','-p',imgdirname])
             data = request.FILES.getlist('files[]')
             numFiles = len(data)
             for x in range(numFiles):
@@ -66,9 +61,9 @@ class viaView(View):
                 path = default_storage.save(imagePathName, ContentFile(data[x].read()))
                 tmp_file = os.path.join(settings.MEDIA_ROOT, path)
         else:
-            global subdiv, batches
+            #global subdiv, batches
             print(request.POST)
-            print(subdiv, batches)
+            #print(subdiv, batches)
             batches = request.POST.get('batches')
             subdiv = request.POST.get('subdiv')
             height = request.POST.get('height')
@@ -76,14 +71,28 @@ class viaView(View):
             rate = request.POST.get('rate')
             max_batches = request.POST.get('max_batches')
             steps = request.POST.get('steps')
+            scales = request.POST.get('scales')
 
-            print(subdiv, batches)
-            replace_('testScript.py', "replace_(settings,'# batch=64','batch=8')",
-                "replace_(settings,'# batch=64','batch= " + batches + "')")
-            replace_('testScript.py',"replace_(settings,'# subdivisions=8','subdivisions=1')",
-                "replace_(settings,'# subdivisions=8','subdivisions=" + subdiv + "')")
-            replace_('testScript.py', "replace_(settings,'max_batches = 500200','max_batches = 10000')",
-                    "replace_(settings,'max_batches = 500200','max_batches = " + max_batches + "')")    
+            subprocess.call(['cp','master_dockerScript.py','copy_dockerScript.py'])
+            docker_script = 'copy_dockerScript.py'
+
+            #copy master then change copy
+            replace_(docker_script, "replace_(settings,'# batch=64','batch=8')",
+                    "replace_(settings,'# batch=64','batch=" + batches + "')")
+            replace_(docker_script,"replace_(settings,'# subdivisions=8','subdivisions=1')",
+                    "replace_(settings,'# subdivisions=8','subdivisions=" + subdiv + "')")
+            replace_(docker_script, "replace_(settings,'max_batches = 500200','max_batches = 10000')",
+                    "replace_(settings,'max_batches = 500200','max_batches = " + max_batches + "')")   
+            replace_(docker_script,"replace_(settings,'steps=400000,450000','steps=3000,6000')",
+                    "replace_(settings,'steps=400000,450000','steps=" + steps + "')") 
+            replace_(docker_script,"replace_(settings,'width=416','width=416')", 
+                    "replace_(settings,'width=416','width=" + width + "')")
+            replace_(docker_script,"replace_(settings,'height=416','height=416')", 
+                    "replace_(settings,'height=416','height=" + height + "')")
+            replace_(docker_script,"replace_(settings,'scales=.1,.1','scales=.1,.1')",
+                    "replace_(settings,'scales=.1,.1','scales=" + scales + "')")
+            replace_(docker_script, "replace_(settings,'learning_rate=0.001','learning_rate=0.001')",
+                    "replace_(settings,'learning_rate=0.001','learning_rate=" + rate + "')")
 
             #make values in testScript to normal numbers
 

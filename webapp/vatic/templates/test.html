@@ -25,9 +25,9 @@
 <form id = "yolo-settings" method = 'post'>
   <h3>File Configerations:</h1>
   Batches: <br>
-  <input type="number" name="batches" value = 64><br>
+  <input type="number" name="batches" value = 8><br>
   Subdivisions:<br>
-  <input type="number" name="subdiv" value = 8><br>
+  <input type="number" name="subdiv" value = 1><br>
   Image Height: <br>
   <input type="number" name="height" value = 416><br>
   Image Width: <br>
@@ -35,9 +35,11 @@
   Learning Rate: <br>
   <input type="number" name="rate" value = .001><br>
   Max Batches: <br>
-  <input type="number" name="max_batches" value = 500200><br>
+  <input type="number" name="max_batches" value = 10000><br>
   Steps: <br>
-  <input type="text" name="steps" value = 400000,450000><br>
+  <input type="text" name="steps" value = '3000,6000'><br>
+  Scales: <br>
+  <input type="text" name="scales" value = '.1,.1'><br>
   <button id="save-settings" type = "button">Save!</button>
 </form>
 
@@ -82,12 +84,13 @@
         'width':    $('input[name=width]').val(),
         'rate':     $('input[name=rate]').val(),
         'max_batches':  $('input[name=max_batches]').val(),
-        'steps':    $('input[name=steps]').val()
+        'steps':    $('input[name=steps]').val(),
+        'scales':   $('input[name=scales]').val()
       }
 
       $.ajax({
         type: 'POST',
-        url: 'jsontoyolo/',
+        url: 'vatic/',
         data: formData,
         
         success: function (data) {

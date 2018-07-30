@@ -795,6 +795,30 @@
         </div>
       </div>
       <div>
+        <form id = "yolo-settings" method = 'post'>
+          <h3>File Configerations:</h1>
+          Batches: <br>
+          <input type="number" name="batches" value = 8><br>
+          Subdivisions:<br>
+          <input type="number" name="subdiv" value = 1><br>
+          Image Height: <br>
+          <input type="number" name="height" value = 416><br>
+          Image Width: <br>
+          <input type="number" name="width" value = 416><br>
+          Learning Rate: <br>
+          <input type="number" name="rate" value = .001><br>
+          Max Batches: <br>
+          <input type="number" name="max_batches" value = 10000><br>
+          Steps: <br>
+          <input type="text" name="steps" value = '3000,6000'><br>
+          Scales: <br>
+          <input type="text" name="scales" value = '.1,.1'><br>
+          <br>
+          <!-- <button id="save-settings" type = "button">Save!</button> -->
+        </form>
+      </div>
+
+      <div>
         <div class="text_panel" id="via_start_info_panel">Starting VGG Image Annotator ...</div>
 
         <div class="text_panel" style="padding: 1em; border: 1px solid #cccccc;" id="about_panel">
@@ -905,11 +929,7 @@
          items like Keyboard Shortcut hidden under the attributes panel -->
   <div style="width: 100%;" id="vertical_space"></div>
 
-  <div id="saveButton">
-    <div class="dropdown-content">
-      <a onclick="download_all_region_data('json')" title="Save image region annotations as a JSON(Javascript Object Notation) file">Save as JSON</a>
-    </div>
-  </div>
+  
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <script type="text/javascript">
     //<!--AUTO_INSERT_VIA_DEMO_JS_HERE-->
@@ -1260,13 +1280,34 @@
           }
         }
       });
+      var formData = new FormData();
+      formData = {
+        'batches':  $('input[name=batches]').val(),
+        'subdiv':   $('input[name=subdiv]').val(),
+        'height':   $('input[name=height]').val(),
+        'width':    $('input[name=width]').val(),
+        'rate':     $('input[name=rate]').val(),
+        'max_batches':  $('input[name=max_batches]').val(),
+        'steps':    $('input[name=steps]').val(),
+        'scales':   $('input[name=scales]').val()
+      }
 
+      $.ajax({
+        type: 'POST',
+        url: '',
+        data: formData,
+        
+        success: function (data) {
+          console.log('Success!');
+        },
+      });
+       
       // posting json file
       $.post("../jsontoyolo/", dataToSend, function (data, status) {
         console.log(data + "joijoijoij");
         console.log(status);
       }); 
-
+      
 
       //TRIGGERS DOWNLOAD BUT WE DONT NEED THIS
       /* if ( all_region_data_blob.size > (2*1024*1024) &&

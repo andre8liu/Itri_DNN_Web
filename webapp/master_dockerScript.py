@@ -67,18 +67,16 @@ print(classes)
 #for yolov2.cfg
 replace_(settings,'batch=1','#batch=1') #commenting out testing config
 replace_(settings,'subdivisions=1','#subdivisions=1') #commenting out testing config
-replace_(settings,'# batch=64','batch= 5')
-replace_(settings,'# subdivisions=8','subdivisions=2313')
-replace_(settings,'max_batches = 500200','max_batches = 3452343')
-replace_(settings,'steps=400000,450000','23,232')
+replace_(settings,'# batch=64','batch=8')
+replace_(settings,'# subdivisions=8','subdivisions=1')
+replace_(settings,'max_batches = 500200','max_batches = 10000')
+replace_(settings,'steps=400000,450000','steps=3000,6000')
 replace_(settings,'classes=80','classes=' + classes)
-replace_(settings,'width=416','width=3452345')
-replace_(settings,'height=416','height=23534')
-replace_(settings,'scales=.1,.1','scales=.232,.232')
-replace_(settings,'learning_rate=.001','learning_rate=111111111')
-#scales
-#height
-#width
+replace_(settings,'width=416','width=416')
+replace_(settings,'height=416','height=416')
+replace_(settings,'scales=.1,.1','scales=.1,.1')
+replace_(settings,'learning_rate=0.001','learning_rate=0.001')
+
 
 #for coco.data
 replace_(paths,'classes= 80','classes=' + classes)

@@ -23,11 +23,11 @@ reload(sys)
 
 
 
-#def index(request):
-#    print("hey from jsontoyooooolo")
-#    return render(request, 'jsontoyolo.html')
-# Create your views here.
-
+#things to fix
+#DONEconfigering learning rate
+#forcing first table to be 'Objects'
+#removing images dir then making new one
+#adding training command
 
 
 class jsonToYolo(View):
@@ -45,9 +45,8 @@ class jsonToYolo(View):
         with open('data.json', 'w') as outfile:
             json.dump(jsondata, outfile)
         convertToYolo()
-
-        #DOCKER SCRIPTS GO HERE
-        #print(request.POST)
+        #startDocker()
+        
         return HttpResponse("hey from post return")
 
 
@@ -61,13 +60,18 @@ def check_contain_chinese(check_str):
 
 def convertToYolo():
     imgdirname = './media/images/'
-    dockimgdir = './trainData/images'
+    dockimgdir = './trainData/images/'
     jsonname = 'data.json'
     namefile = 'labels.names'
 
     # creating files and getting filenames
     lbldirname = imgdirname.rstrip('images/')+'/labels/'
-    os.system('mkdir -p '+lbldirname)
+
+    #subprocess.call(['rm','-rf',imgdirname])
+    #subprocess.call(['mkdir','-p',imgdirname])
+    subprocess.call(['mkdir','-p',lbldirname])
+
+    #os.system('mkdir -p '+lbldirname)
     # listname = jsonname.strip('.json')
     listname = 'imagePaths'
     listdata = open(listname, 'wb')
@@ -152,6 +156,6 @@ def startDocker():
     subprocess.call(['docker', 'cp', 'imagePaths',
                  'darknet:usr/local/src/darknet'])
     # transfer script to docker
-    subprocess.call(['docker','cp','testScript.py','darknet:/usr/local/src/darknet'])
+    subprocess.call(['docker','cp','copy_dockerScript.py','darknet:/usr/local/src/darknet'])
     subprocess.call(['nvidia-docker', 'exec', '-it',
-                 'darknet', 'python', 'testScript.py'])
+                 'darknet', 'python', 'copy_dockerScript.py'])
