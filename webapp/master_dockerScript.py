@@ -84,6 +84,10 @@ replace_(paths,'train  = /home/pjreddie/data/coco/trainvalno5k.txt','train= imag
 replace_(paths,'valid = data/coco_val_5k.list','valid = imagePaths')
 replace_(paths,'names = data/coco.names', 'names = labels.names')
 
+subprocess.call(['wget','https://pjreddie.com/media/files/darknet19_448.conv.23'])
+subprocess.call(['./darknet','detector','train','cfg/coco.data','cfg/yolov2.cfg','darknet19_448.conv.23'])
+
+
 
 # replace_('changing.txt','CHANGE','CHANGED!!')
 # subprocess.Popen(['cat','changing.txt'])
