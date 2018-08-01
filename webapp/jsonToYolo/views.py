@@ -18,6 +18,7 @@ import cv2
 import os
 from importlib import reload
 import sys
+import time
 reload(sys)
 
 
@@ -25,8 +26,8 @@ reload(sys)
 
 #things to fix
 #DONEconfigering learning rate
-#forcing first table to be 'Objects'
-#removing images dir then making new one
+#LATERforcing first table to be 'Objects'
+#DONEremoving images dir then making new one
 #adding training command
 
 
@@ -45,7 +46,9 @@ class jsonToYolo(View):
         with open('data.json', 'w') as outfile:
             json.dump(jsondata, outfile)
         convertToYolo()
-        #startDocker()
+        print("BEFORE START DOCKER")
+        startDocker()
+        print("AFTER START DOCKER")
         
         return HttpResponse("hey from post return")
 
@@ -157,5 +160,8 @@ def startDocker():
                  'darknet:usr/local/src/darknet'])
     # transfer script to docker
     subprocess.call(['docker','cp','copy_dockerScript.py','darknet:/usr/local/src/darknet'])
+    time.sleep(10)
+    print("BEFORE DS CALL")
     subprocess.call(['nvidia-docker', 'exec', '-it',
-                 'darknet', 'python', 'copy_dockerScript.py'])
+                'darknet', 'python', 'copy_dockerScript.py'])
+    print("AFTER DS CALL")

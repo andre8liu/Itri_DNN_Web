@@ -3,6 +3,7 @@ from tempfile import mkstemp
 from shutil import move
 from os import fdopen, remove
 from subprocess import Popen, PIPE
+import time
 
 
 # subprocess.call("ls")
@@ -47,7 +48,12 @@ things needed to config:
 ######### script in docker to configure files runs in docker############
 ##file will be cped into docker and run
 
+print("BEFORE TIME IN DS")
+time.sleep(10)
+print("AFTER TIME IN DS")
 
+
+"""
 #create datafolder and move images/labels
 subprocess.call(['mkdir','trainData'])
 subprocess.call(['mv','labels','trainData/labels'])
@@ -75,7 +81,7 @@ replace_(settings,'classes=80','classes=' + classes)
 replace_(settings,'width=416','width=416')
 replace_(settings,'height=416','height=416')
 replace_(settings,'scales=.1,.1','scales=.1,.1')
-replace_(settings,'learning_rate=.001','learning_rate=.001')
+replace_(settings,'learning_rate=0.001','learning_rate=.001')
 
 
 #for coco.data
@@ -84,6 +90,11 @@ replace_(paths,'train  = /home/pjreddie/data/coco/trainvalno5k.txt','train= imag
 replace_(paths,'valid = data/coco_val_5k.list','valid = imagePaths')
 replace_(paths,'names = data/coco.names', 'names = labels.names')
 
+subprocess.call(['wget','https://pjreddie.com/media/files/darknet19_448.conv.23'])
+subprocess.call(['./darknet','detector','train','cfg/coco.data','cfg/yolov2.cfg','darknet19_448.conv.23'])
+##cp weights file to outside docker
+##
+"""
 
 # replace_('changing.txt','CHANGE','CHANGED!!')
 # subprocess.Popen(['cat','changing.txt'])
@@ -114,22 +125,6 @@ Script after converting to yolo format:
 """
 
 
-def start_docker():
-    # starting docker
-    subprocess.call(['docker', 'kill', 'darknet'])
-    subprocess.call(['docker', 'rm', 'darknet'])
-    subprocess.call(['nvidia-docker', 'run', '-it', '-d','--name', 'darknet', 'blitzingeagle/darknet'])
-
-    # tranfering images
-    subprocess.call(['docker', 'cp', 'media', 'darknet:usr/local/src/darknet'])
-    # transfering labels
-    subprocess.call(['docker', 'cp', 'med/labels', 'darknet:usr/local/src/darknet'])
-    # transfering names file
-    subprocess.call(['docker', 'cp', 'labels.names','darknet:usr/local/src/darknet'])
-    # transfering image paths
-    subprocess.call(['docker', 'cp', 'imagePaths','darknet:usr/local/src/darknet'])
-    # transfer script to docker
-
 
 #DONEmoving save json/converingyolo/transfering data to server/ and runnning docker scripts 
 #another page
@@ -141,3 +136,5 @@ def start_docker():
 #DONEfix image pathing
 
 #change html pages on click for save as json
+
+#have to let them know when training is done
