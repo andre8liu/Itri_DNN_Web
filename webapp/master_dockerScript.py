@@ -48,12 +48,12 @@ things needed to config:
 ######### script in docker to configure files runs in docker############
 ##file will be cped into docker and run
 
-print("BEFORE TIME IN DS")
-time.sleep(10)
-print("AFTER TIME IN DS")
+#print("BEFORE TIME IN DS")
+#time.sleep(10)
+#print("AFTER TIME IN DS")
 
 
-"""
+#"""
 #create datafolder and move images/labels
 subprocess.call(['mkdir','trainData'])
 subprocess.call(['mv','labels','trainData/labels'])
@@ -94,7 +94,7 @@ subprocess.call(['wget','https://pjreddie.com/media/files/darknet19_448.conv.23'
 subprocess.call(['./darknet','detector','train','cfg/coco.data','cfg/yolov2.cfg','darknet19_448.conv.23'])
 ##cp weights file to outside docker
 ##
-"""
+#"""
 
 # replace_('changing.txt','CHANGE','CHANGED!!')
 # subprocess.Popen(['cat','changing.txt'])
@@ -138,3 +138,7 @@ Script after converting to yolo format:
 #change html pages on click for save as json
 
 #have to let them know when training is done
+# 1.change filters
+# 2. change backup directory
+# 3. change labels to delete everytime
+# 4. makes new image folder everytime but we dont want that

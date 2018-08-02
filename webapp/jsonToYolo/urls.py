@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
+from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
-    path('', views.jsonToYolo.as_view(), name='index')
+    path('', csrf_exempt(views.jsonToYolo.as_view()), name='index')
 ]

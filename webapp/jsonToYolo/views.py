@@ -160,7 +160,7 @@ def startDocker():
                  'darknet:usr/local/src/darknet'])
     # transfer script to docker
     subprocess.call(['docker','cp','copy_dockerScript.py','darknet:/usr/local/src/darknet'])
-    time.sleep(10)
+    #time.sleep(10)
     print("BEFORE DS CALL")
     subprocess.call(['nvidia-docker', 'exec', '-it',
                 'darknet', 'python', 'copy_dockerScript.py'])
