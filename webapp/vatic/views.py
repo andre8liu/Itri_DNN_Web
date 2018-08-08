@@ -59,7 +59,7 @@ class viaView(View):
             for x in range(numFiles):
                 imagePathName = 'images/' + str(data[x])
                 path = default_storage.save(imagePathName, ContentFile(data[x].read()))
-                tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+                tmp_file = os.path.join("/home/andre8liu/Desktop/website/Itri_DNN_Web/webapp/media", path)
         else:
             #global subdiv, batches
             print(request.POST)

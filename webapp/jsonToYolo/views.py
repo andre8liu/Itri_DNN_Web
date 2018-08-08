@@ -65,8 +65,8 @@ class jsonToYolo(View):
             print("AFTER START DOCKER")
             imgdirname = './media/images/'
             lbldirname = './med/labels/'
-            subprocess.call(['rm','-rf',imgdirname])
-            subprocess.call(['rm','-rf',lbldirname])
+            #subprocess.call(['rm','-rf',imgdirname])
+            #subprocess.call(['rm','-rf',lbldirname])
             #copy weights file from container to server
             #subprocess.call(['docker','cp','darknet:usr/local/src/darknet/###','.'])
             return HttpResponse("hey from post return")

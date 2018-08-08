@@ -120,5 +120,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_URL = 'media2/'
-MEDIA_ROOT = "/home/andre8liu/Desktop/website/Itri_DNN_Web/webapp/media2"
+MEDIA_ROOT = "/home/andre8liu/Desktop/website/Itri_DNN_Web/webapp/media"
 #CSRF_COOKIE_SECURE = True
