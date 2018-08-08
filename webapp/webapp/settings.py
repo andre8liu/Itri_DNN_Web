@@ -119,6 +119,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = 'media2/'
+MEDIA_ROOT = "/home/andre8liu/Desktop/website/Itri_DNN_Web/webapp/media2"
 #CSRF_COOKIE_SECURE = True

@@ -68,6 +68,11 @@ numClasses = p.stdout.read()
 #classes = numClasses.rstrip('labels.names')
 classes = numClasses[0]
 print(classes)
+filters = str((int(classes)+5)*5)
+print("THIS IS FILTER")
+print(filters)
+filterstr = '237s/filters=425/filters=' + filters + '/'
+
 
 
 #for yolov2.cfg
@@ -82,6 +87,8 @@ replace_(settings,'width=416','width=416')
 replace_(settings,'height=416','height=416')
 replace_(settings,'scales=.1,.1','scales=.1,.1')
 replace_(settings,'learning_rate=0.001','learning_rate=0.001')
+subprocess.call(['sed','-i',filterstr,'cfg/yolov2.cfg'])
+
 
 
 #for coco.data
@@ -89,10 +96,11 @@ replace_(paths,'classes= 80','classes=' + classes)
 replace_(paths,'train  = /home/pjreddie/data/coco/trainvalno5k.txt','train= imagePaths')
 replace_(paths,'valid = data/coco_val_5k.list','valid = imagePaths')
 replace_(paths,'names = data/coco.names', 'names = labels.names')
+replace_(paths,'backup = /home/pjreddie/backup/','backup = /usr/local/src/darknet')
 
-subprocess.call(['wget','https://pjreddie.com/media/files/darknet19_448.conv.23'])
+subprocess.call(['wget','--no-check-certificate', 'https://pjreddie.com/media/files/darknet19_448.conv.23'])
 subprocess.call(['./darknet','detector','train','cfg/coco.data','cfg/yolov2.cfg','darknet19_448.conv.23'])
-##cp weights file to outside docker
+##cp weights file to outside docker (this script runs inside docker so it shouldnt be here)
 ##
 #"""
 
@@ -138,7 +146,7 @@ Script after converting to yolo format:
 #change html pages on click for save as json
 
 #have to let them know when training is done
-# 1.change filters
-# 2. change backup directory
-# 3. change labels to delete everytime
-# 4. makes new image folder everytime but we dont want that
+# 1. DONEchange filters
+# 2. DONEchange backup directory
+# 3. DONEchange labels to delete everytime
+# 4. DONEmakes new image folder everytime but we dont want that

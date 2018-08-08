@@ -21,5 +21,8 @@ urlpatterns = [
     path('vatic/', include('vatic.urls')),
     path('main/', include('mainp.urls') ),
     path('', include('mainp.urls')),
-    path('jsontoyolo/',include('jsonToYolo.urls'))
+    path('jsontoyolo/',include('jsonToYolo.urls')),
+    path('vatic/training/', include('vatic.urls')),
+    path('vatic/done_training/', include('vatic.urls')),
+    
 ]

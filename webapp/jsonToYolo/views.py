@@ -21,9 +21,9 @@ import sys
 import time
 reload(sys)
 
-
-
-
+import mimetypes
+from django.http import StreamingHttpResponse
+from wsgiref.util import FileWrapper
 #things to fix
 #DONEconfigering learning rate
 #LATERforcing first table to be 'Objects'
@@ -39,19 +39,61 @@ class jsonToYolo(View):
 
 
     def post(self,request):
-        
-        print("Saving JSON and converting to YOLO")
-        jsondata = json.loads(request.POST.get("data[]"))
-        print(jsondata)
-        with open('data.json', 'w') as outfile:
-            json.dump(jsondata, outfile)
-        convertToYolo()
-        print("BEFORE START DOCKER")
-        startDocker()
-        print("AFTER START DOCKER")
-        
-        return HttpResponse("hey from post return")
+        #need new post handler that will return weights file through
+        #http response to client side
 
+
+        #can display when training is done through http response, wont fire
+        #until training is done. But maybe i can set it to change
+        #webpages when the http response is sent? Maybe i can do it 
+        #in the callback function. Need to test if callback funtion
+        #runs after the http response is sent. If so then i can use
+        #callback function to change pages when training is done then
+        #have a download button there that uses a get request to get
+        #the weights file from server --> client. 
+        
+        if(request.POST) != {}:
+            print(request.POST)
+            print("Saving JSON and converting to YOLO")
+            jsondata = json.loads(request.POST.get("data[]"))
+            print(jsondata)
+            with open('data.json', 'w') as outfile:
+             json.dump(jsondata, outfile)
+            convertToYolo()
+            print("BEFORE START DOCKER")
+            startDocker()
+            print("AFTER START DOCKER")
+            imgdirname = './media/images/'
+            lbldirname = './med/labels/'
+            subprocess.call(['rm','-rf',imgdirname])
+            subprocess.call(['rm','-rf',lbldirname])
+            #copy weights file from container to server
+            #subprocess.call(['docker','cp','darknet:usr/local/src/darknet/###','.'])
+            return HttpResponse("hey from post return")
+        else:
+            return(download(request,'yolov3full.weights'))
+
+def download(request, path):
+    response = HttpResponse()
+    #file_path = os.path.join(settings.MEDIA_ROOT, path)
+    the_file = os.path.join(settings.MEDIA_ROOT, path)
+    filename = path
+    #subprocess.call('pwd')
+    #print(file_path)
+    if os.path.exists(the_file):
+        print("HI FROM DOWNLOAD")       
+        #with open(file_path, 'rb') as fh:
+        #    response = HttpResponse(fh.read(), content_type="application/octet-stream")
+        #    response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+        #    print(response)
+        #    return response
+        chunk_size = 8192
+        response = StreamingHttpResponse(FileWrapper(open(the_file, 'rb'), chunk_size),
+                           content_type=mimetypes.guess_type(the_file)[0])
+        response['Content-Length'] = os.path.getsize(the_file)    
+        response['Content-Disposition'] = "attachment; filename=%s" % filename
+        return response
+    #raise Http404
 
 
 def check_contain_chinese(check_str):
