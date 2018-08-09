@@ -1,1 +1,1 @@
-{"0.jpg12213": {"base64_img_data": "", "file_attributes": {}, "regions": {"0": {"shape_attributes": {"width": 108, "y": 103, "x": 137, "height": 112, "name": "rect"}, "region_attributes": {"Animal": "cat"}}}, "size": 12213, "fileref": "", "filename": "0.jpg"}}
+{"image_0001.jpg30939": {"filename": "image_0001.jpg", "regions": {"0": {"region_attributes": {"Animal": "face"}, "shape_attributes": {"height": 240, "x": 241, "name": "rect", "y": 65, "width": 184}}}, "file_attributes": {}, "fileref": "", "base64_img_data": "", "size": 30939}}

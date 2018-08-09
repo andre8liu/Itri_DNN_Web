@@ -52,7 +52,7 @@ class jsonToYolo(View):
         #have a download button there that uses a get request to get
         #the weights file from server --> client. 
         
-        if(request.POST) != {}:
+        if(request.POST != {}):
             print(request.POST)
             print("Saving JSON and converting to YOLO")
             jsondata = json.loads(request.POST.get("data[]"))
@@ -65,13 +65,14 @@ class jsonToYolo(View):
             print("AFTER START DOCKER")
             imgdirname = './media/images/'
             lbldirname = './med/labels/'
-            #subprocess.call(['rm','-rf',imgdirname])
-            #subprocess.call(['rm','-rf',lbldirname])
+            subprocess.call(['rm','-rf',imgdirname])
+            subprocess.call(['rm','-rf',lbldirname])
             #copy weights file from container to server
-            #subprocess.call(['docker','cp','darknet:usr/local/src/darknet/###','.'])
+            #subprocess.call(['docker','cp','darknet:usr/local/src/darknet/yolov2_final.weights','.'])
             return HttpResponse("hey from post return")
         else:
-            return(download(request,'yolov3full.weights'))
+            print("hey before return in json")
+            return(download(request,'yolov2_final.weights'))
 
 def download(request, path):
     response = HttpResponse()
