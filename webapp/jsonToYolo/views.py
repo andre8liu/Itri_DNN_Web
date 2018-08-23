@@ -224,7 +224,7 @@ def startDocker(premodel):
     subprocess.call(['docker', 'rm', 'darknetv2'])
     subprocess.call(['nvidia-docker', 'run', '-it', '-d',
                      '--name', 'darknetv2', 'andre8liu/darknet:v2.0'])
-
+    
     
     #subprocess.call(['docker', 'start', 'darknetv2'])
     # tranfering images

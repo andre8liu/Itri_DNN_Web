@@ -80,14 +80,14 @@ filterstr = '237s/filters=425/filters=' + filters + '/'
 replace_(settings,'batch=1','#batch=1') #commenting out testing config
 replace_(settings,'subdivisions=1','#subdivisions=1') #commenting out testing config
 replace_(settings,'# batch=64','batch=8')
-replace_(settings,'# subdivisions=8','subdivisions=None')
-replace_(settings,'max_batches = 500200','max_batches = None')
-replace_(settings,'steps=400000,450000','steps=None')
+replace_(settings,'# subdivisions=8','subdivisions=2')
+replace_(settings,'max_batches = 500200','max_batches = 10000')
+replace_(settings,'steps=400000,450000','steps=4000,6000')
 replace_(settings,'classes=80','classes=' + classes)
-replace_(settings,'width=416','width=None')
-replace_(settings,'height=416','height=None')
-replace_(settings,'scales=.1,.1','scales=None')
-replace_(settings,'learning_rate=0.001','learning_rate=None')
+replace_(settings,'width=416','width=416')
+replace_(settings,'height=416','height=416')
+replace_(settings,'scales=.1,.1','scales=.1,.1')
+replace_(settings,'learning_rate=0.001','learning_rate=.002')
 subprocess.call(['sed','-i',filterstr,'cfg/yolov2.cfg'])
 
 
