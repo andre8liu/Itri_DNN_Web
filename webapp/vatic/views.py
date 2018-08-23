@@ -42,7 +42,6 @@ class viaView(View):
         # replace_(docker_script, "replace_(settings,'# batch=64','batch=8')",
         #        "replace_(settings,'# batch=64','batch= " + batches + "')")
 
-        
 
         print("POST RUNNING")
         
@@ -64,14 +63,14 @@ class viaView(View):
             #global subdiv, batches
             print(request.POST)
             #print(subdiv, batches)
-            batches = request.POST.get('batches')
-            subdiv = request.POST.get('subdiv')
-            height = request.POST.get('height')
-            width = request.POST.get('width')
-            rate = request.POST.get('rate')
-            max_batches = request.POST.get('max_batches')
-            steps = request.POST.get('steps')
-            scales = request.POST.get('scales')
+            batches = str(request.POST.get('batches'))
+            subdiv = str(request.POST.get('subdiv'))
+            height = str(request.POST.get('height'))
+            width = str(request.POST.get('width'))
+            rate = str(request.POST.get('rate'))
+            max_batches = str(request.POST.get('max_batches'))
+            steps = str(request.POST.get('steps'))
+            scales = str(request.POST.get('scales'))
 
             subprocess.call(['cp','master_dockerScript.py','copy_dockerScript.py'])
             docker_script = 'copy_dockerScript.py'

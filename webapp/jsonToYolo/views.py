@@ -24,74 +24,91 @@ reload(sys)
 import mimetypes
 from django.http import StreamingHttpResponse
 from wsgiref.util import FileWrapper
-#things to fix
-#DONEconfigering learning rate
-#LATERforcing first table to be 'Objects'
-#DONEremoving images dir then making new one
-#adding training command
+# things to fix
+# DONEconfigering learning rate
+# LATERforcing first table to be 'Objects'
+# DONEremoving images dir then making new one
+# adding training command
 
 
 class jsonToYolo(View):
-    def get(self,request):
-        print("hey")
-        yoloView = jsonToYolo()
-        return render(request, 'jsontoyolo.html', {'yoloView':yoloView}) 
+    def get(self, request):
+        with open('pre_annotDH.json') as json_file:
+            data = json.load(json_file)
+            print(data)
+        #yoloView = jsonToYolo()
+        return HttpResponse(json.dumps({'data':data}),content_type = 'application/json')
 
+    def post(self, request):
+        # need new post handler that will return weights file through
+        # http response to client side
 
-    def post(self,request):
-        #need new post handler that will return weights file through
-        #http response to client side
+        # can display when training is done through http response, wont fire
+        # until training is done. But maybe i can set it to change
+        # webpages when the http response is sent? Maybe i can do it
+        # in the callback function. Need to test if callback funtion
+        # runs after the http response is sent. If so then i can use
+        # callback function to change pages when training is done then
+        # have a download button there that uses a get request to get
+        # the weights file from server --> client.
 
-
-        #can display when training is done through http response, wont fire
-        #until training is done. But maybe i can set it to change
-        #webpages when the http response is sent? Maybe i can do it 
-        #in the callback function. Need to test if callback funtion
-        #runs after the http response is sent. If so then i can use
-        #callback function to change pages when training is done then
-        #have a download button there that uses a get request to get
-        #the weights file from server --> client. 
-        
-        if(request.POST != {}):
-            print(request.POST)
+        if(request.POST.get('premodel') == 'false'):  # for main model
+            print(request.POST.get("premodel"))
             print("Saving JSON and converting to YOLO")
             jsondata = json.loads(request.POST.get("data[]"))
-            print(jsondata)
+            #print(request.POSt)
             with open('data.json', 'w') as outfile:
-             json.dump(jsondata, outfile)
-            convertToYolo()
+                json.dump(jsondata, outfile)
+            convertToYolo(False)
             print("BEFORE START DOCKER")
-            startDocker()
+            startDocker(False)
             print("AFTER START DOCKER")
             imgdirname = './media/images/'
-            lbldirname = './med/labels/'
-            subprocess.call(['rm','-rf',imgdirname])
-            subprocess.call(['rm','-rf',lbldirname])
-            #copy weights file from container to server
-            #subprocess.call(['docker','cp','darknet:usr/local/src/darknet/yolov2_final.weights','.'])
+            lbldirname = './media/labels/'
+            subprocess.call(['rm', '-rf', imgdirname])
+            subprocess.call(['rm', '-rf', lbldirname])
+            # copy weights file from container to server
+            # subprocess.call(['docker','cp','darknet:usr/local/src/darknet/yolov2_final.weights','.'])
             return HttpResponse("hey from post return")
-        else:
-            print("hey before return in json")
-            return(download(request,'yolov2_final.weights'))
+        else:  # for premodel
+            print(request.POST.get("premodel"))
+            print("Saving JSON and converting to YOLO")
+            jsondata = json.loads(request.POST.get("data[]"))
+            #print(request.POSt)
+            with open('data.json', 'w') as outfile:
+                json.dump(jsondata, outfile)
+            convertToYolo(True)
+            print("BEFORE START DOCKER")
+            startDocker(True)
+            print("AFTER START DOCKER")
+            #imgdirname = './media/images/'
+            #lbldirname = './media/labels/'
+            #subprocess.call(['rm', '-rf', imgdirname])
+            #subprocess.call(['rm', '-rf', lbldirname])
+            # copy annotations file from container to server
+            subprocess.call(['docker','cp','darknetv2:usr/local/src/darknet/pre_annot.json','.'])
+            #might have to move pictures back to images folder
+            return(HttpResponse("hi"))
 
+# GOING TO MOVE DOWNLOAD TO ANOTHER FILE
 def download(request, path):
     response = HttpResponse()
     #file_path = os.path.join(settings.MEDIA_ROOT, path)
     the_file = os.path.join(settings.MEDIA_ROOT, path)
     filename = path
-    #subprocess.call('pwd')
-    #print(file_path)
+    # subprocess.call('pwd')
+    # print(file_path)
     if os.path.exists(the_file):
-        print("HI FROM DOWNLOAD")       
-        #with open(file_path, 'rb') as fh:
+        print("HI FROM DOWNLOAD")
+        # with open(file_path, 'rb') as fh:
         #    response = HttpResponse(fh.read(), content_type="application/octet-stream")
         #    response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
         #    print(response)
         #    return response
         chunk_size = 8192
         response = StreamingHttpResponse(FileWrapper(open(the_file, 'rb'), chunk_size),
-                           content_type=mimetypes.guess_type(the_file)[0])
-        response['Content-Length'] = os.path.getsize(the_file)    
+                                         content_type=mimetypes.guess_type(the_file)[0])
+        response['Content-Length'] = os.path.getsize(the_file)
         response['Content-Disposition'] = "attachment; filename=%s" % filename
         return response
     #raise Http404
@@ -104,23 +121,29 @@ def check_contain_chinese(check_str):
     return False
 
 
-def convertToYolo():
+def convertToYolo(is_premodel):
     imgdirname = './media/images/'
     dockimgdir = './trainData/images/'
+    predockimgdir = './trainData/pre_images/'
     jsonname = 'data.json'
     namefile = 'labels.names'
 
     # creating files and getting filenames
-    lbldirname = imgdirname.rstrip('images/')+'/labels/'
+    #lbldirname = imgdirname.rstrip('images/')+'/labels/'
+    lbldirname = './media/labels/'
 
-    #subprocess.call(['rm','-rf',imgdirname])
-    #subprocess.call(['mkdir','-p',imgdirname])
-    subprocess.call(['mkdir','-p',lbldirname])
+    # subprocess.call(['rm','-rf',imgdirname])
+    # subprocess.call(['mkdir','-p',imgdirname])
+    subprocess.call(['mkdir', '-p', lbldirname])
+    if is_premodel:
+        subprocess.call(['mkdir', '-p', 'premodel_images'])
+        # paths for inference images
+        pre_imagepaths = open('pre_imagepaths', 'wb')
 
     #os.system('mkdir -p '+lbldirname)
     # listname = jsonname.strip('.json')
     listname = 'imagePaths'
-    listdata = open(listname, 'wb')
+    listdata = open(listname, 'wb')    # imagepaths
     labelNames = open(namefile, 'w+')  # creates names file
 
     # for names file
@@ -135,10 +158,8 @@ def convertToYolo():
         for key1 in data.keys():  # goes through each file
 
             filename = imgdirname+data[key1]['filename']  # gets file name
-            filepath = dockimgdir +data[key1]['filename']
+            filepath = dockimgdir + data[key1]['filename']
             print(filename, count, type(filename))
-            listdata.write(filepath.encode('gbk'))
-            listdata.write('\n'.encode('gbk'))
 
             if os.path.isfile(filename):
                 print("FOUNDIT")
@@ -154,6 +175,19 @@ def convertToYolo():
                     height_image, width_image, _ = image.shape
                     print(len(rectangles.keys()), image.shape,
                           height_image, width_image)
+                    if is_premodel:  # if for premodel, we wont include non annotated images
+                        if rectangles == {}:
+                            subprocess.call(
+                                ['mv', filename, 'premodel_images'])
+                            filepath = predockimgdir + data[key1]['filename']
+                            pre_imagepaths.write(filepath.encode('gbk'))
+                            pre_imagepaths.write('\n'.encode('gbk'))
+                            # moving premodel inference images to new folder
+                            print("NO ANNOTATIONS FOR THIS PIC")
+                            continue
+                    listdata.write(filepath.encode('gbk'))
+                    listdata.write('\n'.encode('gbk'))
+
                     with open(lbldirname+'/'+os.path.splitext(os.path.basename(filename))[0]+'.txt', 'w') as ff:
                         for key2 in rectangles.keys():
                             objType = rectangles[key2]["region_attributes"]
@@ -183,28 +217,59 @@ def convertToYolo():
                     count += 1
 
 
-def startDocker():
+def startDocker(premodel):
     # starting docker
-    subprocess.call(['docker', 'kill', 'darknet'])
-    subprocess.call(['docker', 'rm', 'darknet'])
+    
+    subprocess.call(['docker', 'kill', 'darknetv2'])
+    subprocess.call(['docker', 'rm', 'darknetv2'])
     subprocess.call(['nvidia-docker', 'run', '-it', '-d',
-                 '--name', 'darknet', 'blitzingeagle/darknet'])
+                     '--name', 'darknetv2', 'andre8liu/darknet:v2.0'])
 
+    
+    #subprocess.call(['docker', 'start', 'darknetv2'])
     # tranfering images
-    subprocess.call(['docker', 'cp', 'media', 'darknet:usr/local/src/darknet'])
+    if premodel:
+        print("COPYING PREMODEL IMAGES")
+        subprocess.call(['docker', 'cp', 'premodel_images',
+                         'darknetv2:usr/local/src/darknet'])
+
+    subprocess.call(['docker', 'cp', 'media/images',
+                     'darknetv2:usr/local/src/darknet'])
     # transfering labels
-    subprocess.call(['docker', 'cp', 'med/labels',
-                 'darknet:usr/local/src/darknet'])
+    subprocess.call(['docker', 'cp', 'media/labels',
+                     'darknetv2:usr/local/src/darknet'])
     # transfering names file
     subprocess.call(['docker', 'cp', 'labels.names',
-                 'darknet:usr/local/src/darknet'])
+                     'darknetv2:usr/local/src/darknet'])
     # transfering image paths
     subprocess.call(['docker', 'cp', 'imagePaths',
-                 'darknet:usr/local/src/darknet'])
+                     'darknetv2:usr/local/src/darknet'])
+    # transfering pre_imagepaths
+    if premodel:
+        subprocess.call(['docker', 'cp', 'pre_imagepaths',
+                         'darknetv2:usr/local/src/darknet'])
     # transfer script to docker
-    subprocess.call(['docker','cp','copy_dockerScript.py','darknet:/usr/local/src/darknet'])
-    #time.sleep(10)
+    subprocess.call(['docker', 'cp', 'copy_dockerScript.py',
+                     'darknetv2:/usr/local/src/darknet'])
+    # time.sleep(10)
     print("BEFORE DS CALL")
     subprocess.call(['nvidia-docker', 'exec', '-it',
-                'darknet', 'python', 'copy_dockerScript.py'])
+                     'darknetv2', 'python', 'copy_dockerScript.py'])
     print("AFTER DS CALL")
+
+
+# cp rest of the pictures into a different directory. so we do need to have another
+# script for the premodel so that it can run inference then write to a file.
+# Then import these changes. Send it as a post request.
+
+'''
+TODO:
+1. change to via 2.0
+2. DONE distinguish between premodel post and normal post
+3. how to delete those pictures (maybe we can change when we post)
+4. write premodel inference script 
+5. DONE write darknet inference method in darknetv2 
+6. DONEmake new image of darknetv2
+7. CLEAN
+#we can make a seperate imagepaths file for the inf images and pass them in here
+'''

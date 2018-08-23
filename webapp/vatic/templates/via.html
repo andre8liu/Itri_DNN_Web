@@ -793,6 +793,8 @@
       </div>
       <div id="saveButton">
         <div class="dropdown-content">
+          <button id="test_import"> TEST IMPORT</button>
+          <button id="train_premodel"> TRAIN PREMODEL</button>
           <a onclick="download_all_region_data('json')" title="Save image region annotations as a JSON(Javascript Object Notation) file">Save as JSON</a>
         </div>
       </div>
@@ -1272,7 +1274,7 @@
 
 
     function download_all_region_data(type) {
-      
+
       // Javascript strings (DOMString) is automatically converted to utf-8
       // see: https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob
       var all_region_data = pack_via_metadata(type);
@@ -1281,6 +1283,7 @@
       };
       var all_region_data_blob = new Blob(all_region_data, blob_attr);
       var dataToSend = {
+        premodel: 'false',
         data: all_region_data
       };
 
@@ -1304,7 +1307,7 @@
         'scales': $('input[name=scales]').val()
       }
 
-      
+
       $.ajax({
         type: 'POST',
         url: '',
@@ -1319,7 +1322,7 @@
       document.location.href = 'training/';
       //change to page for waiting on training
       //document.location.href='done_training/';
-      
+
       //document.location.href = 'dewjdwue/';
       //after training is done, change to page with download button
 
@@ -1352,7 +1355,7 @@
       });
       console.log('FSOEIRFGOEIRJIOERJ');
       document.location.href = 'done_training/';
-      
+
 
 
 
@@ -1368,6 +1371,101 @@
       //create new function to save data to json file and send a post request
       //to the server with the data. 
     }
+
+
+    $('#train_premodel').click(function () {
+
+      var csrftoken = getCookie('csrftoken');
+      $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        }
+      });
+      var type = 'json';
+
+      var all_region_data = pack_via_metadata(type);
+      var blob_attr = {
+        type: 'text/' + type + ';charset=utf-8'
+      };
+      var all_region_data_blob = new Blob(all_region_data, blob_attr);
+      var dataToSend = {
+        premodel: 'true',
+        data: all_region_data
+      };
+
+      $.ajax({
+        type: 'POST',
+        url: '',
+        data: '',
+
+        success: function (data) {
+          console.log('Success!');
+        },
+      });
+
+      var formData = new FormData();
+      formData = {
+        'batches': $('input[name=batches]').val(),
+        'subdiv': $('input[name=subdiv]').val(),
+        'height': $('input[name=height]').val(),
+        'width': $('input[name=width]').val(),
+        'rate': $('input[name=rate]').val(),
+        'max_batches': $('input[name=max_batches]').val(),
+        'steps': $('input[name=steps]').val(),
+        'scales': $('input[name=scales]').val()
+      }
+
+
+      $.ajax({
+        type: 'POST',
+        url: '',
+        data: formData,
+        async: false,
+
+        success: function (data) {
+          console.log('Success!');
+        },
+      });
+
+      $.ajax({
+        type: 'POST',
+        url: '../jsontoyolo/',
+        data: dataToSend,
+        async: false,
+
+        success: function (data) {
+
+          //then changes to another page with download button for weights file :) 
+          //console.log(data + "joijoijoij");
+          console.log("helloededsdsed");
+        },
+      });
+
+      var csrftoken = getCookie('csrftoken');
+      $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        }
+      });
+      var jsondata = '';
+      $.ajax({
+        type: 'GET',
+        url: '../jsontoyolo/',
+        dataType: '',
+        success: function (data) {
+
+          console.log(data.data);
+          import_annotations_from_json(data.data);
+        },
+
+      })
+
+
+    });
 
     function sel_local_data_file(type) {
       if (invisible_file_input) {
@@ -1708,13 +1806,43 @@
       save_current_data_to_browser_cache();
     }
 
+
+    $('#test_import').click(function () {
+      var csrftoken = getCookie('csrftoken');
+      $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        }
+      });
+      var jsondata = '';
+      $.ajax({
+        type: 'GET',
+        url: '../jsontoyolo/',
+        dataType: '',
+        success: function (data) {
+
+          console.log(data.data);
+          import_annotations_from_json(data.data);
+        },
+
+      })
+
+      //console.log("this is json data" + jsondata);
+      //import_annotations_from_json(jsondata);
+
+
+    });
+
     function import_annotations_from_json(data) {
       if (data === '' || typeof (data) === 'undefined') {
+        console.log(data);
         return;
       }
 
-      var d = JSON.parse(data);
-
+      //var d = JSON.parse(data);
+      var d = data;
       var region_import_count = 0;
       for (var image_id in d) {
         if (_via_img_metadata.hasOwnProperty(image_id)) {
@@ -4693,12 +4821,15 @@
         firstrow.insertCell(-1).innerHTML = '<b>' + col_header + '</b>';
       }
       // allow adding new attributes
+      //need to only call this on the first initial call
+      //maybe get number of columns from element table 
       firstrow.insertCell(-1).innerHTML = '<input type="text"' +
         ' onchange="add_new_attribute(\'' + type[0] + '\', this.value)"' +
-        ' value = "[ Add New ]"' +
+        ' value = ""' +
         ' onblur="_via_is_user_adding_attribute_name=false; this.value = \'\';"' +
         ' onfocus="_via_is_user_adding_attribute_name=true; this.value = \'\';" />';
 
+      //add_new_attribute('r', 'Object');
       // if multiple regions are selected, show the selected regions first
       var sel_reg_list = [];
       var remaining_reg_list = [];

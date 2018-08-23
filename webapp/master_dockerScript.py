@@ -57,7 +57,8 @@ things needed to config:
 #create datafolder and move images/labels
 subprocess.call(['mkdir','trainData'])
 subprocess.call(['mv','labels','trainData/labels'])
-subprocess.call(['mv','media/images','trainData/images'])
+subprocess.call(['mv','images','trainData/images'])
+subprocess.call(['mv','premodel_images','trainData/pre_images'])
 
 
 settings = 'cfg/yolov2.cfg'
@@ -102,6 +103,8 @@ subprocess.call(['wget','--no-check-certificate', 'https://pjreddie.com/media/fi
 subprocess.call(['./darknet','detector','train','cfg/coco.data','cfg/yolov2.cfg','darknet19_448.conv.23'])
 ##cp weights file to outside docker (this script runs inside docker so it shouldnt be here)
 ##
+
+#subprocess.call(['python3','docker_volume/darknet.py'])
 #"""
 
 # replace_('changing.txt','CHANGE','CHANGED!!')

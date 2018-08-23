@@ -1,0 +1,19 @@
+{
+    "0.jpg12213": {
+        "file_attributes": {},
+        "filename": "0.jpg",
+        "regions": [{
+            "region_attributes": {
+                "Object": "cat"
+            },
+            "shape_attributes": {
+                "width": 282,
+                "y": 13,
+                "x": 101,
+                "height": 251,
+                "name": "rect"
+            }
+        }],
+        "size": 12213
+    }
+}

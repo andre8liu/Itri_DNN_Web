@@ -57,7 +57,8 @@ things needed to config:
 #create datafolder and move images/labels
 subprocess.call(['mkdir','trainData'])
 subprocess.call(['mv','labels','trainData/labels'])
-subprocess.call(['mv','media/images','trainData/images'])
+subprocess.call(['mv','images','trainData/images'])
+subprocess.call(['mv','premodel_images','trainData/pre_images'])
 
 
 settings = 'cfg/yolov2.cfg'
@@ -79,14 +80,14 @@ filterstr = '237s/filters=425/filters=' + filters + '/'
 replace_(settings,'batch=1','#batch=1') #commenting out testing config
 replace_(settings,'subdivisions=1','#subdivisions=1') #commenting out testing config
 replace_(settings,'# batch=64','batch=8')
-replace_(settings,'# subdivisions=8','subdivisions=1')
-replace_(settings,'max_batches = 500200','max_batches = 10000')
-replace_(settings,'steps=400000,450000','steps=3000,6000')
+replace_(settings,'# subdivisions=8','subdivisions=None')
+replace_(settings,'max_batches = 500200','max_batches = None')
+replace_(settings,'steps=400000,450000','steps=None')
 replace_(settings,'classes=80','classes=' + classes)
-replace_(settings,'width=416','width=416')
-replace_(settings,'height=416','height=416')
-replace_(settings,'scales=.1,.1','scales=.1,.1')
-replace_(settings,'learning_rate=0.001','learning_rate=.001')
+replace_(settings,'width=416','width=None')
+replace_(settings,'height=416','height=None')
+replace_(settings,'scales=.1,.1','scales=None')
+replace_(settings,'learning_rate=0.001','learning_rate=None')
 subprocess.call(['sed','-i',filterstr,'cfg/yolov2.cfg'])
 
 
@@ -102,6 +103,8 @@ subprocess.call(['wget','--no-check-certificate', 'https://pjreddie.com/media/fi
 subprocess.call(['./darknet','detector','train','cfg/coco.data','cfg/yolov2.cfg','darknet19_448.conv.23'])
 ##cp weights file to outside docker (this script runs inside docker so it shouldnt be here)
 ##
+
+#subprocess.call(['python3','docker_volume/darknet.py'])
 #"""
 
 # replace_('changing.txt','CHANGE','CHANGED!!')
