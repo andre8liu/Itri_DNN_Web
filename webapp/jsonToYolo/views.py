@@ -33,7 +33,7 @@ from wsgiref.util import FileWrapper
 
 class jsonToYolo(View):
     def get(self, request):
-        with open('pre_annotDH.json') as json_file:
+        with open('pre_annot.json') as json_file:
             data = json.load(json_file)
             print(data)
         #yoloView = jsonToYolo()
@@ -63,14 +63,11 @@ class jsonToYolo(View):
             print("BEFORE START DOCKER")
             startDocker(False)
             print("AFTER START DOCKER")
-            imgdirname = './media/images/'
-            lbldirname = './media/labels/'
-            subprocess.call(['rm', '-rf', imgdirname])
-            subprocess.call(['rm', '-rf', lbldirname])
-            # copy weights file from container to server
-            # subprocess.call(['docker','cp','darknet:usr/local/src/darknet/yolov2_final.weights','.'])
+            subprocess.call(['rm', '-rf', './media/images/'])
+            subprocess.call(['rm', '-rf', './media/labels/'])
+            subprocess.call(['rm','-rf', './premodel_images'])
             return HttpResponse("hey from post return")
-        else:  # for premodel
+        elif request.POST.get('premode') == 'true':  # for premodel
             print(request.POST.get("premodel"))
             print("Saving JSON and converting to YOLO")
             jsondata = json.loads(request.POST.get("data[]"))
@@ -81,14 +78,14 @@ class jsonToYolo(View):
             print("BEFORE START DOCKER")
             startDocker(True)
             print("AFTER START DOCKER")
-            #imgdirname = './media/images/'
-            #lbldirname = './media/labels/'
-            #subprocess.call(['rm', '-rf', imgdirname])
-            #subprocess.call(['rm', '-rf', lbldirname])
-            # copy annotations file from container to server
+
             subprocess.call(['docker','cp','darknetv2:usr/local/src/darknet/pre_annot.json','.'])
+            subprocess.call(['mv','premodel_images/*','media/images'])
             #might have to move pictures back to images folder
             return(HttpResponse("hi"))
+        else:
+            print("SUPPOSED TO BE DOWNLOADINGS")
+            return(download(request,'yolo.weights'))
 
 # GOING TO MOVE DOWNLOAD TO ANOTHER FILE
 def download(request, path):
@@ -267,9 +264,11 @@ TODO:
 1. change to via 2.0
 2. DONE distinguish between premodel post and normal post
 3. how to delete those pictures (maybe we can change when we post)
-4. write premodel inference script 
+4. DONEwrite premodel inference script 
 5. DONE write darknet inference method in darknetv2 
 6. DONEmake new image of darknetv2
 7. CLEAN
 #we can make a seperate imagepaths file for the inf images and pass them in here
+can also copy predockerscript by checking post request data
+can use preimage paths file to move images back 
 '''

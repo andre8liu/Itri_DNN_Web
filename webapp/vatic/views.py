@@ -33,36 +33,37 @@ class viaView(View):
 
     def post(self, request):
         #global subdiv, batches
-        #print(request.POST)
+        # print(request.POST)
         #print(subdiv, batches)
         #batches = request.POST.get('batches')
-        
+
         #subdiv = request.POST.get('subdiv')
         #print(subdiv, batches)
         # replace_(docker_script, "replace_(settings,'# batch=64','batch=8')",
         #        "replace_(settings,'# batch=64','batch= " + batches + "')")
 
-
         print("POST RUNNING")
-        
+
         print(request.FILES.getlist('files[]'))
-        
+
         if(request.FILES.getlist('files[]')) != []:
             print("Saving images")
-            #print(len(data))
+            # print(len(data))
             imgdirname = './media/images/'
-            #subprocess.call(['rm','-rf',imgdirname])
-            subprocess.call(['mkdir','-p',imgdirname])
+            # subprocess.call(['rm','-rf',imgdirname])
+            subprocess.call(['mkdir', '-p', imgdirname])
             data = request.FILES.getlist('files[]')
             numFiles = len(data)
             for x in range(numFiles):
                 imagePathName = 'images/' + str(data[x])
-                path = default_storage.save(imagePathName, ContentFile(data[x].read()))
+                path = default_storage.save(
+                    imagePathName, ContentFile(data[x].read()))
                 tmp_file = os.path.join(settings.MEDIA_ROOT, path)
         else:
             #global subdiv, batches
             print(request.POST)
             #print(subdiv, batches)
+            premodel = request.POST.get('premodel')
             batches = request.POST.get('batches')
             subdiv = request.POST.get('subdiv')
             height = request.POST.get('height')
@@ -72,37 +73,40 @@ class viaView(View):
             steps = request.POST.get('steps')
             scales = request.POST.get('scales')
 
-            subprocess.call(['cp','master_dockerScript.py','copy_dockerScript.py'])
-            docker_script = 'copy_dockerScript.py'
+            if premodel = 'true':
+                subprocess.call(
+                    ['cp', 'master_predockerScript.py', 'copy_dockerScript.py'])
+                docker_script = 'copy_dockerScript.py'
+            else:
+                subprocess.call(['cp', 'master_dockerScript.py', 'copy_dockerScript.py'])
+                docker_script = 'copy_dockerScript.py'
 
-            #copy master then change copy
+            # copy master then change copy
             replace_(docker_script, "replace_(settings,'# batch=64','batch=8')",
-                    "replace_(settings,'# batch=64','batch=" + batches + "')")
-            replace_(docker_script,"replace_(settings,'# subdivisions=8','subdivisions=1')",
-                    "replace_(settings,'# subdivisions=8','subdivisions=" + subdiv + "')")
+                     "replace_(settings,'# batch=64','batch=" + batches + "')")
+            replace_(docker_script, "replace_(settings,'# subdivisions=8','subdivisions=1')",
+                     "replace_(settings,'# subdivisions=8','subdivisions=" + subdiv + "')")
             replace_(docker_script, "replace_(settings,'max_batches = 500200','max_batches = 10000')",
-                    "replace_(settings,'max_batches = 500200','max_batches = " + max_batches + "')")   
-            replace_(docker_script,"replace_(settings,'steps=400000,450000','steps=3000,6000')",
-                    "replace_(settings,'steps=400000,450000','steps=" + steps + "')") 
-            replace_(docker_script,"replace_(settings,'width=416','width=416')", 
-                    "replace_(settings,'width=416','width=" + width + "')")
-            replace_(docker_script,"replace_(settings,'height=416','height=416')", 
-                    "replace_(settings,'height=416','height=" + height + "')")
-            replace_(docker_script,"replace_(settings,'scales=.1,.1','scales=.1,.1')",
-                    "replace_(settings,'scales=.1,.1','scales=" + scales + "')")
+                     "replace_(settings,'max_batches = 500200','max_batches = " + max_batches + "')")
+            replace_(docker_script, "replace_(settings,'steps=400000,450000','steps=3000,6000')",
+                     "replace_(settings,'steps=400000,450000','steps=" + steps + "')")
+            replace_(docker_script, "replace_(settings,'width=416','width=416')",
+                     "replace_(settings,'width=416','width=" + width + "')")
+            replace_(docker_script, "replace_(settings,'height=416','height=416')",
+                     "replace_(settings,'height=416','height=" + height + "')")
+            replace_(docker_script, "replace_(settings,'scales=.1,.1','scales=.1,.1')",
+                     "replace_(settings,'scales=.1,.1','scales=" + scales + "')")
             replace_(docker_script, "replace_(settings,'learning_rate=0.001','learning_rate=0.001')",
-                    "replace_(settings,'learning_rate=0.001','learning_rate=" + rate + "')")
+                     "replace_(settings,'learning_rate=0.001','learning_rate=" + rate + "')")
 
-            #make values in testScript to normal numbers
-
+            # make values in testScript to normal numbers
 
             #print("Saving JSON and converting to YOLO")
             #jsondata = json.loads(request.POST.get("data[]"))
-            #print(jsondata)
-            #with open('data.json', 'w') as outfile:
+            # print(jsondata)
+            # with open('data.json', 'w') as outfile:
             #    json.dump(jsondata, outfile)
-            #convertToYolo()
-       
+            # convertToYolo()
 
         # print(str(data))
         return HttpResponse("hey from post return")
@@ -124,15 +128,12 @@ def replace_(file_path, pattern, subst):
     remove(file_path)
     # Move new file
     move(abs_path, file_path)
-    return 1 
+    return 1
 
 
 def train(request):
     return render(request, 'training.html')
 
+
 def done_training(request):
     return render(request, 'done_train.html')
-
-
-
-
