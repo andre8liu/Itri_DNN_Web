@@ -73,9 +73,9 @@ class viaView(View):
             steps = request.POST.get('steps')
             scales = request.POST.get('scales')
 
-            if premodel = 'true':
+            if premodel == 'true':
                 subprocess.call(
-                    ['cp', 'master_predockerScript.py', 'copy_dockerScript.py'])
+                    ['cp', 'master_predockerscript.py', 'copy_dockerScript.py'])
                 docker_script = 'copy_dockerScript.py'
             else:
                 subprocess.call(['cp', 'master_dockerScript.py', 'copy_dockerScript.py'])

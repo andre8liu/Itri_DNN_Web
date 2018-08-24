@@ -67,7 +67,7 @@ class jsonToYolo(View):
             subprocess.call(['rm', '-rf', './media/labels/'])
             subprocess.call(['rm','-rf', './premodel_images'])
             return HttpResponse("hey from post return")
-        elif request.POST.get('premode') == 'true':  # for premodel
+        elif request.POST.get('premodel') == 'true':  # for premodel
             print(request.POST.get("premodel"))
             print("Saving JSON and converting to YOLO")
             jsondata = json.loads(request.POST.get("data[]"))
@@ -270,5 +270,5 @@ TODO:
 7. CLEAN
 #we can make a seperate imagepaths file for the inf images and pass them in here
 can also copy predockerscript by checking post request data
-can use preimage paths file to move images back 
+DONEcan use preimage paths file to move images back 
 '''
