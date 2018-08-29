@@ -20,7 +20,7 @@ def replace_(file_path, pattern, subst):
     remove(file_path)
     # Move new file
     move(abs_path, file_path)
-
+ 
 """
 Files:  cfg/coco.data
         cfg/yolo-v2.cfg
@@ -104,7 +104,7 @@ subprocess.call(['./darknet','detector','train','cfg/coco.data','cfg/yolov2.cfg'
 ##cp weights file to outside docker (this script runs inside docker so it shouldnt be here)
 ##
 
-subprocess.call(['python3','docker_volume/darknet.py'])
+subprocess.call(['python3','python/darknet.py'])
 #"""
 
 # replace_('changing.txt','CHANGE','CHANGED!!')

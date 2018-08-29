@@ -40,17 +40,7 @@ class jsonToYolo(View):
         return HttpResponse(json.dumps({'data':data}),content_type = 'application/json')
 
     def post(self, request):
-        # need new post handler that will return weights file through
-        # http response to client side
-
-        # can display when training is done through http response, wont fire
-        # until training is done. But maybe i can set it to change
-        # webpages when the http response is sent? Maybe i can do it
-        # in the callback function. Need to test if callback funtion
-        # runs after the http response is sent. If so then i can use
-        # callback function to change pages when training is done then
-        # have a download button there that uses a get request to get
-        # the weights file from server --> client.
+       
 
         if(request.POST.get('premodel') == 'false'):  # for main model
             print(request.POST.get("premodel"))
@@ -152,7 +142,7 @@ def convertToYolo(is_premodel):
         data = json.loads(f.readline())
         # print data
         print(len(data))
-        for key1 in data.keys():  # goes through each file
+        for key1 in data.keys():  # goes through each picture
 
             filename = imgdirname+data[key1]['filename']  # gets file name
             filepath = dockimgdir + data[key1]['filename']
@@ -188,12 +178,13 @@ def convertToYolo(is_premodel):
                     with open(lbldirname+'/'+os.path.splitext(os.path.basename(filename))[0]+'.txt', 'w') as ff:
                         for key2 in rectangles.keys():
                             objType = rectangles[key2]["region_attributes"]
-                            obj = str(objType["Animal"])
-                            if not obj in objDict:
-                                objDict[obj] = objcount
-                                labelNames.write(obj)
-                                labelNames.write(' \n')
-                                objcount += 1
+                            for key3 in objType.keys():
+                                obj = str(objType[key3])
+                                if not obj in objDict:
+                                    objDict[obj] = objcount
+                                    labelNames.write(obj)
+                                    labelNames.write(' \n')
+                                    objcount += 1
                             xywh = rectangles[key2]["shape_attributes"]
                             x = int(xywh["x"])
                             y = int(xywh["y"])
@@ -263,7 +254,7 @@ def startDocker(premodel):
 TODO:
 1. change to via 2.0
 2. DONE distinguish between premodel post and normal post
-3. how to delete those pictures (maybe we can change when we post)
+3. Ehhhow to delete those pictures (maybe we can change when we post)
 4. DONEwrite premodel inference script 
 5. DONE write darknet inference method in darknetv2 
 6. DONEmake new image of darknetv2
