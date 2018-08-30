@@ -1,8 +1,9 @@
+pre_annot.json
 media/
 media2/
 med/
 yolov2_final.weights
-imagePaths
+imagePaths/
 pre_imagepaths
 premodel_images/*
 test/
