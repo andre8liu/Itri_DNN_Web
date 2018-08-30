@@ -5,3 +5,5 @@ yolov2_final.weights
 imagePaths
 pre_imagepaths
 premodel_images/*
+test/
+test2/
