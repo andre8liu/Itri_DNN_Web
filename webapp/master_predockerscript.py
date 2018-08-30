@@ -104,7 +104,7 @@ subprocess.call(['./darknet','detector','train','cfg/coco.data','cfg/yolov2.cfg'
 ##cp weights file to outside docker (this script runs inside docker so it shouldnt be here)
 ##
 
-subprocess.call(['python3','python/darknet.py'])
+subprocess.call(['python3','python/darknet2.py'])
 #"""
 
 # replace_('changing.txt','CHANGE','CHANGED!!')

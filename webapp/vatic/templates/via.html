@@ -1313,7 +1313,7 @@
         type: 'POST',
         url: '',
         data: formData,
-        async: false,
+        //async: false,
 
         success: function (data) {
           console.log('Success!');
@@ -1345,17 +1345,18 @@
         type: 'POST',
         url: '../jsontoyolo/',
         data: dataToSend,
-        async: false,
+        //async: false,
 
         success: function (data) {
 
           //then changes to another page with download button for weights file :) 
           //console.log(data + "joijoijoij");
           console.log("helloededsdsed");
+          document.location.href = 'done_training/';
         },
       });
       console.log('FSOEIRFGOEIRJIOERJ');
-      document.location.href = 'done_training/';
+      
 
 
 

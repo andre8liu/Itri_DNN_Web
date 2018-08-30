@@ -56,6 +56,7 @@ class jsonToYolo(View):
             subprocess.call(['rm', '-rf', './media/images/'])
             subprocess.call(['rm', '-rf', './media/labels/'])
             subprocess.call(['rm','-rf', './premodel_images'])
+            subprocess.call(['docker','cp','darknetv2:usr/local/src/darknet/yolov2_final.weights','.'])
             return HttpResponse("hey from post return")
         elif request.POST.get('premodel') == 'true':  # for premodel
             print(request.POST.get("premodel"))
@@ -70,12 +71,13 @@ class jsonToYolo(View):
             print("AFTER START DOCKER")
 
             subprocess.call(['docker','cp','darknetv2:usr/local/src/darknet/pre_annot.json','.'])
-            subprocess.call(['mv','premodel_images/*','media/images'])
+            subprocess.call(['mv','media2/*','media/images'])
+            subprocess.call(['pwd'])
             #might have to move pictures back to images folder
             return(HttpResponse("hi"))
         else:
             print("SUPPOSED TO BE DOWNLOADINGS")
-            return(download(request,'yolo.weights'))
+            return(download(request,'yolov2_final.weights'))
 
 # GOING TO MOVE DOWNLOAD TO ANOTHER FILE
 def download(request, path):
