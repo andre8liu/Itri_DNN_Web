@@ -72,8 +72,8 @@ class jsonToYolo(View):
 
             subprocess.call(['docker','cp','darknetv2:usr/local/src/darknet/pre_annot.json','.'])
             subprocess.call(['cp','-a','premodel_images/.','media/images'])
-            subprocess.call([['rm', '-r','premodel_images']])
-            
+            subprocess.call(['rm', '-r','premodel_images'])
+
             #might have to move pictures back to images folder
             return(HttpResponse("hi"))
         else:

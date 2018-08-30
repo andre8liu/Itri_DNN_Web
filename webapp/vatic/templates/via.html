@@ -793,7 +793,7 @@
       </div>
       <div id="saveButton">
         <div class="dropdown-content">
-         <!-- <button id="test_import"> TEST IMPORT</button> -->
+          <!-- <button id="test_import"> TEST IMPORT</button> -->
           <button id="train_premodel"> Train Premodel </button>
           <button onclick="download_all_region_data('json')" title="Save image region annotations as a JSON(Javascript Object Notation) file">Save as JSON</button>
         </div>
@@ -1356,7 +1356,7 @@
         },
       });
       console.log('FSOEIRFGOEIRJIOERJ');
-      
+
 
 
 
@@ -1397,7 +1397,7 @@
         data: all_region_data
       };
 
-      
+
 
       var formData = new FormData();
       formData = {
@@ -1428,36 +1428,37 @@
         type: 'POST',
         url: '../jsontoyolo/',
         data: dataToSend,
-        async: false,
+        //async: false,
 
         success: function (data) {
 
           //then changes to another page with download button for weights file :) 
           //console.log(data + "joijoijoij");
+          var csrftoken = getCookie('csrftoken');
+          $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+              if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+              }
+            }
+          });
+          var jsondata = '';
+          $.ajax({
+            type: 'GET',
+            url: '../jsontoyolo/',
+            dataType: '',
+            success: function (data) {
+
+              console.log(data.data);
+              import_annotations_from_json(data.data);
+            },
+
+          });
           console.log("helloededsdsed");
         },
       });
 
-      var csrftoken = getCookie('csrftoken');
-      $.ajaxSetup({
-        beforeSend: function (xhr, settings) {
-          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-          }
-        }
-      });
-      var jsondata = '';
-      $.ajax({
-        type: 'GET',
-        url: '../jsontoyolo/',
-        dataType: '',
-        success: function (data) {
 
-          console.log(data.data);
-          import_annotations_from_json(data.data);
-        },
-
-      })
 
 
     });
@@ -2080,7 +2081,7 @@
         // JSON.stringify() does not work with Map()
         // hence, we cast everything as objects
         var _via_img_metadata_as_obj = {};
-        for (var image_id in _via_img_metadata) { 
+        for (var image_id in _via_img_metadata) {
           var image_data = {};
           //image_data.fileref = _via_img_metadata[image_id].fileref;
           image_data.fileref = '';
@@ -4819,15 +4820,15 @@
       //need to only call this on the first initial call
       //maybe get number of columns from element table 
       //console.log(Object.keys(col_headers).length);
-      if(Object.keys(col_headers).length ==0 ) {
+      if (Object.keys(col_headers).length == 0) {
         firstrow.insertCell(-1).innerHTML = '<input type="text"' +
-        ' onchange="add_new_attribute(\'' + type[0] + '\', this.value)"' +
-        ' value = "[Add Catagory]"' +
-        ' onblur="_via_is_user_adding_attribute_name=false; this.value = \'\';"' +
-        ' onfocus="_via_is_user_adding_attribute_name=true; this.value = \'\';" />';
+          ' onchange="add_new_attribute(\'' + type[0] + '\', this.value)"' +
+          ' value = "[Add Catagory]"' +
+          ' onblur="_via_is_user_adding_attribute_name=false; this.value = \'\';"' +
+          ' onfocus="_via_is_user_adding_attribute_name=true; this.value = \'\';" />';
 
       }
-      
+
 
       //add_new_attribute('r', 'Object');
       // if multiple regions are selected, show the selected regions first

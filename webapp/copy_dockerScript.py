@@ -20,7 +20,7 @@ def replace_(file_path, pattern, subst):
     remove(file_path)
     # Move new file
     move(abs_path, file_path)
- 
+
 """
 Files:  cfg/coco.data
         cfg/yolo-v2.cfg
@@ -79,13 +79,13 @@ filterstr = '237s/filters=425/filters=' + filters + '/'
 #for yolov2.cfg
 replace_(settings,'batch=1','#batch=1') #commenting out testing config
 replace_(settings,'subdivisions=1','#subdivisions=1') #commenting out testing config
-replace_(settings,'# batch=64','batch=8')
+replace_(settings,'# batch=64','batch=4')
 replace_(settings,'# subdivisions=8','subdivisions=1')
-replace_(settings,'max_batches = 500200','max_batches = 10000')
-replace_(settings,'steps=400000,450000','steps=3000,6000')
+replace_(settings,'max_batches = 500200','max_batches = 5000')
+replace_(settings,'steps=400000,450000','steps=1000,2000')
 replace_(settings,'classes=80','classes=' + classes)
-replace_(settings,'width=416','width=416')
-replace_(settings,'height=416','height=416')
+replace_(settings,'width=416','width=50')
+replace_(settings,'height=416','height=50')
 replace_(settings,'scales=.1,.1','scales=.1,.1')
 replace_(settings,'learning_rate=0.001','learning_rate=.001')
 subprocess.call(['sed','-i',filterstr,'cfg/yolov2.cfg'])
@@ -104,7 +104,7 @@ subprocess.call(['./darknet','detector','train','cfg/coco.data','cfg/yolov2.cfg'
 ##cp weights file to outside docker (this script runs inside docker so it shouldnt be here)
 ##
 
-subprocess.call(['python3','python/darknet2.py'])
+#subprocess.call(['python3','docker_volume/darknet.py'])
 #"""
 
 # replace_('changing.txt','CHANGE','CHANGED!!')
